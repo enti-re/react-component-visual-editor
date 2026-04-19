@@ -1,4 +1,3 @@
-import { useRef } from 'react'
 import { usePreviewPanel } from '../hooks/usePreviewPanel'
 import { HoverHighlight } from './HoverHighlight'
 import type { SelectedNode } from '../types'
