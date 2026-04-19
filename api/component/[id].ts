@@ -1,11 +1,10 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { Pool } from 'pg'
+import { createClient } from '@supabase/supabase-js'
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-  max: 1,
-})
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_ANON_KEY!
+)
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   if (req.method !== 'PUT') {
@@ -19,14 +18,16 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     return
   }
 
-  const { rows } = await pool.query(
-    `UPDATE components SET code = $1, updated_at = NOW() WHERE id = $2 RETURNING id, code, created_at, updated_at`,
-    [code, req.query.id]
-  )
-  if (!rows.length) {
-    res.status(404).json({ error: 'Component not found' })
+  const { data, error } = await supabase
+    .from('components')
+    .update({ code, updated_at: new Date().toISOString() })
+    .eq('id', req.query.id as string)
+    .select()
+    .single()
+
+  if (error || !data) {
+    res.status(404).json({ error: error?.message ?? 'Component not found' })
     return
   }
-  const r = rows[0]
-  res.json({ id: r.id, code: r.code, createdAt: r.created_at, updatedAt: r.updated_at })
+  res.json({ id: data.id, code: data.code, createdAt: data.created_at, updatedAt: data.updated_at })
 }

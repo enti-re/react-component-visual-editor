@@ -1,11 +1,10 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { Pool } from 'pg'
+import { createClient } from '@supabase/supabase-js'
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-  max: 1,
-})
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_ANON_KEY!
+)
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   if (req.method !== 'GET') {
@@ -13,14 +12,15 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     return
   }
 
-  const { rows } = await pool.query(
-    `SELECT * FROM components WHERE id = $1`,
-    [req.query.id]
-  )
-  if (!rows.length) {
+  const { data, error } = await supabase
+    .from('components')
+    .select()
+    .eq('id', req.query.id as string)
+    .single()
+
+  if (error || !data) {
     res.status(404).json({ error: 'Component not found' })
     return
   }
-  const r = rows[0]
-  res.json({ id: r.id, code: r.code, createdAt: r.created_at, updatedAt: r.updated_at })
+  res.json({ id: data.id, code: data.code, createdAt: data.created_at, updatedAt: data.updated_at })
 }

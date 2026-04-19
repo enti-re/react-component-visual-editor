@@ -1,12 +1,11 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { randomUUID } from 'crypto'
-import { Pool } from 'pg'
+import { createClient } from '@supabase/supabase-js'
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-  max: 1,
-})
+const supabase = createClient(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_ANON_KEY!
+)
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   if (req.method !== 'POST') {
@@ -21,9 +20,10 @@ export default async (req: VercelRequest, res: VercelResponse) => {
   }
 
   const id = randomUUID()
-  const { rows } = await pool.query(
-    `INSERT INTO components (id, code) VALUES ($1, $2) RETURNING id`,
-    [id, code]
-  )
-  res.status(201).json({ id: rows[0].id })
+  const { error } = await supabase.from('components').insert({ id, code })
+  if (error) {
+    res.status(500).json({ error: error.message })
+    return
+  }
+  res.status(201).json({ id })
 }
