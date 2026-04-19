@@ -1,5 +1,11 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
-import { getPool, toResponse, type ComponentRow } from '../_db.js'
+import { Pool } from 'pg'
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+  max: 1,
+})
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   if (req.method !== 'GET') {
@@ -7,8 +13,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     return
   }
 
-  const pool = getPool()
-  const { rows } = await pool.query<ComponentRow>(
+  const { rows } = await pool.query(
     `SELECT * FROM components WHERE id = $1`,
     [req.query.id]
   )
@@ -16,5 +21,6 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     res.status(404).json({ error: 'Component not found' })
     return
   }
-  res.json(toResponse(rows[0]))
+  const r = rows[0]
+  res.json({ id: r.id, code: r.code, createdAt: r.created_at, updatedAt: r.updated_at })
 }

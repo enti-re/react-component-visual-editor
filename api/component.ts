@@ -1,6 +1,12 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { randomUUID } from 'crypto'
-import { getPool, toResponse, type ComponentRow } from './_db.js'
+import { Pool } from 'pg'
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false },
+  max: 1,
+})
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   if (req.method !== 'POST') {
@@ -14,19 +20,9 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     return
   }
 
-  const pool = getPool()
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS components (
-      id         TEXT PRIMARY KEY,
-      code       TEXT NOT NULL,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    )
-  `)
-
   const id = randomUUID()
-  const { rows } = await pool.query<ComponentRow>(
-    `INSERT INTO components (id, code) VALUES ($1, $2) RETURNING *`,
+  const { rows } = await pool.query(
+    `INSERT INTO components (id, code) VALUES ($1, $2) RETURNING id`,
     [id, code]
   )
   res.status(201).json({ id: rows[0].id })
