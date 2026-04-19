@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { randomUUID } from 'crypto'
-import { getPool, toResponse, type ComponentRow } from './_db'
+import { getPool, toResponse, type ComponentRow } from './_db.js'
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   if (req.method !== 'POST') {
