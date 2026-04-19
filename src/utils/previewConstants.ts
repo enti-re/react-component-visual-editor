@@ -1,0 +1,11 @@
+export const RENDER_DEBOUNCE_MS = 250
+export const EDITOR_ID_ATTR = 'data-editor-id'
+export const EDITOR_ID_SELECTOR = '[data-editor-id]'
+export const STRIP_EXPORT_DEFAULT = /export\s+default\s+/g
+export const STRIP_EXPORT = /^\s*export\s+/gm
+export const CAPITALIZED_DECLARATION_PATTERN = /(?:function|const|let|var|class)\s+([A-Z][A-Za-z0-9_$]*)/g
+export const FALLBACK_COMPONENT_NAMES = ['MyComponent', 'App']
+export const ERROR_PARSE_FAILED = 'Could not parse JSX'
+export const ERROR_TRANSPILE_FAILED = 'Transpilation failed'
+export const ERROR_NO_COMPONENT = 'No component found. Declare a capitalized function/const (e.g. "MyComponent") or use `export default`.'
+export const ERROR_UNKNOWN = 'Unknown error'

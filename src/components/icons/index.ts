@@ -1,0 +1,8 @@
+export { PencilIcon } from './PencilIcon'
+export { InspectIllustration } from './InspectIllustration'
+export { ClickIllustration } from './ClickIllustration'
+export { CheckIcon } from './CheckIcon'
+export { LinkIcon } from './LinkIcon'
+export { InspectorIcon } from './InspectorIcon'
+export { ChevronIcon } from './ChevronIcon'
+export { FullPreviewIcon } from './FullPreviewIcon'

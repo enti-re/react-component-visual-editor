@@ -7,7 +7,7 @@ export interface ComponentRecord {
   updatedAt: string
 }
 
-export async function createComponent(code: string): Promise<{ id: string }> {
+export const createComponent = async (code: string): Promise<{ id: string }> => {
   const res = await fetch(`${BASE}/component`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -17,13 +17,13 @@ export async function createComponent(code: string): Promise<{ id: string }> {
   return res.json()
 }
 
-export async function getComponent(id: string): Promise<ComponentRecord> {
+export const getComponent = async (id: string): Promise<ComponentRecord> => {
   const res = await fetch(`${BASE}/preview/${id}`)
   if (!res.ok) throw new Error(await res.text())
   return res.json()
 }
 
-export async function updateComponent(id: string, code: string): Promise<ComponentRecord> {
+export const updateComponent = async (id: string, code: string): Promise<ComponentRecord> => {
   const res = await fetch(`${BASE}/component/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },

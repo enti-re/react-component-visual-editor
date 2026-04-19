@@ -1,0 +1,9 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/api/component/:id", "destination": "/api/component/[id]" },
+    { "source": "/api/preview/:id", "destination": "/api/preview/[id]" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
